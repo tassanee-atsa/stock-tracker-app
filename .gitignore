@@ -1,3 +1,6 @@
+# My gitignore
+.DS_Store
+
 # Logs
 logs
 *.log
