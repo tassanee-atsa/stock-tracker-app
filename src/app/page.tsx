@@ -12,7 +12,7 @@ export default function Home() {
   useEffect(() => {
     const getStockData = async () => {
       const stockData = await fetch(
-        "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=IBM&outputsize=full&apikey=demo"
+        `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=AAPL&outputsize=full&interval=60min&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`
       );
       setStockData(await stockData.json());
     };
