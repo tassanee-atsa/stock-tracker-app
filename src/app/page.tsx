@@ -1,32 +1,22 @@
-'use client'
-
 import Image from "next/image";
 import styles from "./page.module.css";
-import { useEffect, useState } from "react";
 
-export default function Home() {
-  //www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=IBM&outputsize=full&apikey=demo
+export default async function Home() {
 
-  const [stockData, setStockData] = useState({});
+  const getStockData = async () => {
+    const response = await fetch(
+      `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=AAPL&outputsize=full&interval=60min&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`
+    );
+    return response.json();
+  };
 
-  useEffect(() => {
-    const getStockData = async () => {
-      const stockData = await fetch(
-        `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=AAPL&outputsize=full&interval=60min&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`
-      );
-      setStockData(await stockData.json());
-    };
-    getStockData();
-  }, []);
-
-  console.log(stockData);
+  const stockData = await getStockData();
+  const stockDataAsString = JSON.stringify(stockData);
 
   return (
     <main className={styles.main}>
       <div>
-        <p>
-          {JSON.stringify(stockData)}
-        </p>
+        <p>{stockDataAsString}</p>
       </div>
     </main>
   );
