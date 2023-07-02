@@ -7,12 +7,14 @@ export type TransformedIntraday60MinStockData = {
     outputSize: string;
     timeZone: string;
   };
-  data: {
-    timestamp: string;
-    open: number;
-    high: number;
-    low: number;
-    close: number;
-    volume: number;
-  }[];
+  data: StockDataPoint[];
+};
+
+export type StockDataPoint = {
+  timestamp: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
 };
