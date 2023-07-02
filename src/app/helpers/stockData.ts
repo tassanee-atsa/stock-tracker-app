@@ -1,11 +1,17 @@
-import { TransformedIntraday60MinStockData } from "../types/stockGraphData";
+import {
+  StockTimeInterval,
+  TransformedIntraday60MinStockData,
+} from "../types/stockGraphData";
 
 export const transformAlphaVantageStockData = (
-  alphaVantageResponseData: RawIntraDay60Min
+  alphaVantageResponseData: RawStockData,
+  interval: StockTimeInterval
 ): TransformedIntraday60MinStockData => {
-  const timeSeries = alphaVantageResponseData["Time Series (60min)"];
+  const timeSeries = alphaVantageResponseData[interval];
   const data = Object.entries(timeSeries).map((entry) => {
-    const timestamp = entry[0];
+
+    const timestamp = interval ===  "Time Series (60min)" ? entry[0].substring(entry[0].indexOf(' ')).slice(0, 6) : entry[0];
+
     return {
       timestamp: timestamp,
       open: Number.parseFloat(entry[1]["1. open"] as string),
