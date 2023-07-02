@@ -18,3 +18,5 @@ export type StockDataPoint = {
   close: number;
   volume: number;
 };
+
+export type StockTimeInterval = "Time Series (1min)" | "Time Series (60min)";

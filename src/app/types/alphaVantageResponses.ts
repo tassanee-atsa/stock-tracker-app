@@ -1,3 +1,3 @@
-type RawIntraDay60Min = {
+type RawStockData = {
   [key: string]: StringMap | { [key: string]: StringMap };
 };
