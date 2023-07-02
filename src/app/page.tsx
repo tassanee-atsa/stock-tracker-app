@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { transformAlphaVantageStockData } from "./helpers/stockData";
 import styles from "./page.module.css";
 
 export default async function Home() {
@@ -10,13 +10,14 @@ export default async function Home() {
     return response.json();
   };
 
-  const stockData = await getStockData();
-  const stockDataAsString = JSON.stringify(stockData);
+  const rawStockData = await getStockData();
+
+  const transformedStockData = transformAlphaVantageStockData(rawStockData);
 
   return (
     <main className={styles.main}>
       <div>
-        <p>{stockDataAsString}</p>
+        <p>{JSON.stringify(transformedStockData)}</p>
       </div>
     </main>
   );
