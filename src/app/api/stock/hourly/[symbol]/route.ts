@@ -1,3 +1,4 @@
+import { transformAlphaVantageStockData } from "@/app/helpers/stockData";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -9,6 +10,14 @@ export async function GET(
   );
   const data = await res.json();
 
-  return NextResponse.json({ data });
+  const transformedStockData = transformAlphaVantageStockData(
+    data,
+    "Time Series (60min)"
+  );
+  transformedStockData.data.splice(24).reverse();
+
+  return NextResponse.json({
+    metadata: transformedStockData.metaData,
+    data: transformedStockData.data,
+  });
 }
- 
