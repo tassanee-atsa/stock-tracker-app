@@ -9,7 +9,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { StockDataPoint } from "../types/stockGraphData";
+import { StockDataPoint, TransformedIntraday60MinStockData } from "../types/stockGraphData";
+import { useEffect, useState } from "react";
 
 // type Props = {
 //     fetchedData: StockDataPoint[]
@@ -27,27 +28,86 @@ import { StockDataPoint } from "../types/stockGraphData";
 //       </ResponsiveContainer>
 //     );
 //   };
+enum TIMEFRAMES {
+  HOURLY = "hourly",
+  WEEKLY = "weekly",
+  MONTHLY = "monthly",
+}
 
-export const StockChart = ({
-  fetchedData,
-}: {
-  fetchedData: StockDataPoint[];
-}) => {
+export const StockChart = () => {
+  const [timeFrame, setTimeFrame] = useState<TIMEFRAMES>(TIMEFRAMES.WEEKLY);
+  const [stockData, setStockData] = useState<TransformedIntraday60MinStockData | undefined>();
+  let highestPrice = 1;
+  let lowestPrice = 0;
+  if (stockData) {
+    highestPrice = Math.max(...stockData.data.map((dataPoint: any) => dataPoint.high));
+    highestPrice *= 1.05;
+    highestPrice = Math.round(highestPrice);
+  }
+  if (stockData) {
+    lowestPrice = Math.min(...stockData.data.map((dataPoint: any)=> dataPoint.low))
+    lowestPrice *= 0.95
+    lowestPrice = Math.round(lowestPrice);
+  }
+  console.log(lowestPrice)
+  useEffect(() => {
+    const fetchStockData = async () => {
+      try {
+        const res = await fetch(`/api/stock/${timeFrame}/IBM`);
+        setStockData(await res.json());
+      } catch {
+        setStockData(undefined);
+      }
+    };
+
+    fetchStockData();
+  }, [timeFrame]);
+
   return (
-    <ResponsiveContainer width="80%" aspect={3}>
-      <LineChart
-        width={700}
-        height={300}
-        data={fetchedData}
-        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="timestamp" interval={4} height={100} tickMargin={20}/>
-        <Line type="natural" dataKey="high" stroke="green" dot={false} />
-        <Line type="linear" dataKey="low" stroke="red" dot={false} />
-        <Tooltip />
-        <YAxis domain={[150, 210]} tickMargin={20}/>
-      </LineChart>
-    </ResponsiveContainer>
+    stockData && (
+      <>
+        <ResponsiveContainer width="80%" aspect={3}>
+          <LineChart
+            width={700}
+            height={300}
+            data={stockData.data}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="timestamp"
+              interval={Math.round(stockData.data.length/6)}
+              height={100}
+              tickMargin={20}
+            />
+            <Line type="natural" dataKey="high" stroke="green" dot={false} />
+            <Line type="linear" dataKey="low" stroke="red" dot={false} />
+            <Tooltip />
+            <YAxis domain={[lowestPrice, highestPrice]} tickMargin={20} />
+          </LineChart>
+        </ResponsiveContainer>
+        <button
+          onClick={() => {
+            setTimeFrame(TIMEFRAMES.HOURLY);
+          }}
+        >
+          Last 24 hours
+        </button>
+        <button
+          onClick={() => {
+            setTimeFrame(TIMEFRAMES.WEEKLY);
+          }}
+        >
+          last 3 months
+        </button>
+        <button
+          onClick={() => {
+            setTimeFrame(TIMEFRAMES.MONTHLY);
+          }}
+        >
+          last 24 months
+        </button>
+      </>
+    )
   );
 };

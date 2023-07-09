@@ -19,4 +19,4 @@ export type StockDataPoint = {
   volume: number;
 };
 
-export type StockTimeInterval = "Time Series (1min)" | "Time Series (60min)";
+export type StockTimeInterval = "Weekly Time Series" | "Time Series (60min)" | "Monthly Time Series";
