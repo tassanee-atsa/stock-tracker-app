@@ -12,29 +12,17 @@ import {
 import { StockDataPoint, TransformedIntraday60MinStockData } from "../types/stockGraphData";
 import { useEffect, useState } from "react";
 
-// type Props = {
-//     fetchedData: StockDataPoint[]
-// }
-
-// export const StockChart = (props: Props) => {
-//     return (
-//       <ResponsiveContainer width="100%" aspect={3}>
-//         <LineChart width={600} height={300} data={props.fetchedData}>
-//           <CartesianGrid strokeDasharray="3 3" />
-//           <XAxis dataKey="timestamp" />
-//           <Line type="monotone" dataKey="high" stroke="#8884d8" />
-//           <YAxis />
-//         </LineChart>
-//       </ResponsiveContainer>
-//     );
-//   };
 enum TIMEFRAMES {
   HOURLY = "hourly",
   WEEKLY = "weekly",
   MONTHLY = "monthly",
 }
 
-export const StockChart = () => {
+type Props = {
+  symbol?: string;
+}
+
+export const StockChart = ({symbol = "IBM"}: Props) => {
   const [timeFrame, setTimeFrame] = useState<TIMEFRAMES>(TIMEFRAMES.WEEKLY);
   const [stockData, setStockData] = useState<TransformedIntraday60MinStockData | undefined>();
   let highestPrice = 1;
@@ -49,11 +37,11 @@ export const StockChart = () => {
     lowestPrice *= 0.95
     lowestPrice = Math.round(lowestPrice);
   }
-  console.log(lowestPrice)
+
   useEffect(() => {
     const fetchStockData = async () => {
       try {
-        const res = await fetch(`/api/stock/${timeFrame}/IBM`);
+        const res = await fetch(`/api/stock/${timeFrame}/${symbol}`);
         setStockData(await res.json());
       } catch {
         setStockData(undefined);
@@ -61,7 +49,7 @@ export const StockChart = () => {
     };
 
     fetchStockData();
-  }, [timeFrame]);
+  }, [timeFrame, symbol]);
 
   return (
     stockData && (
@@ -111,3 +99,21 @@ export const StockChart = () => {
     )
   );
 };
+
+
+// type Props = {
+//     fetchedData: StockDataPoint[]
+// }
+
+// export const StockChart = (props: Props) => {
+//     return (
+//       <ResponsiveContainer width="100%" aspect={3}>
+//         <LineChart width={600} height={300} data={props.fetchedData}>
+//           <CartesianGrid strokeDasharray="3 3" />
+//           <XAxis dataKey="timestamp" />
+//           <Line type="monotone" dataKey="high" stroke="#8884d8" />
+//           <YAxis />
+//         </LineChart>
+//       </ResponsiveContainer>
+//     );
+//   };
