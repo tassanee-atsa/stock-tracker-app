@@ -9,7 +9,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { StockDataPoint, TransformedIntraday60MinStockData } from "../types/stockGraphData";
+import { TransformedIntraday60MinStockData } from "../types/stockGraphData";
 import { useEffect, useState } from "react";
 
 enum TIMEFRAMES {
@@ -39,7 +39,7 @@ export const StockChart = ({symbol = "IBM"}: Props) => {
   }
 
   useEffect(() => {
-    const fetchStockData = async () => {
+    const fetchStockData = async () => {  
       try {
         const res = await fetch(`/api/stock/${timeFrame}/${symbol}`);
         setStockData(await res.json());
